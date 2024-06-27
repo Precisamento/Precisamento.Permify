@@ -1,6 +1,6 @@
 # Precisamento.Permify
 
-Precisamento.Permify is a C# SDK for the Permify API.
+Precisamento.Permify is a community C# SDK for the Permify API.
 
 # Usage
 
