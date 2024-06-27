@@ -4,6 +4,10 @@ Precisamento.Permify is a C# SDK for the Permify API.
 
 # Usage
 
+## Install
+
+This library can be installed from nuget under the name `Precisamento.Permify`.
+
 ## General
 
 There are few interfaces available that have slightly different uses, but they all share the same default implementation (PermifyClient).
