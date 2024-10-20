@@ -23,6 +23,9 @@ namespace Precisamento.Permify.PermissionService
         [JsonPropertyName("subject")]
         public PermifySubject Subject { get; set; }
 
+        [JsonPropertyName("scope")]
+        public LookupScope? Scope { get; set; }
+
         [JsonPropertyName("context")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public PermissionContext? Context { get; set; }

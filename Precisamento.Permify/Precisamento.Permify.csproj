@@ -3,7 +3,27 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Nullable>enable</Nullable>
+    <Title>Precisamento.Permify</Title>
+    <Company>Precisamento</Company>
+    <Authors>mystborn</Authors>
+    <Description>Unofficial C# SDK for the Permify API</Description>
+    <PackageProjectUrl>https://github.com/Precisamento/Precisamento.Permify</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/Precisamento/Precisamento.Permify</RepositoryUrl>
+    <PackageTags>permify</PackageTags>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Macross.Json.Extensions" Version="3.0.0" />

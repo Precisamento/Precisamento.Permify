@@ -22,6 +22,11 @@ namespace Precisamento.Permify.SchemaService
 
         public ListSchemaRequest(int pageSize, string? continuousToken)
         {
+            if (pageSize < 1 || pageSize > 100)
+            {
+                throw new PermifyException("Page size must be between 1 and 100");
+            }
+
             PageSize = pageSize;
             ContinuousToken = continuousToken;
         }
