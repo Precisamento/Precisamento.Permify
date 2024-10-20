@@ -224,28 +224,14 @@ namespace Precisamento.Permify.Tests
         [TestMethod]
         public async Task ReadSchema_NonExistantSchema_ReturnsEmptySchema()
         {
-            /*
-                 "schema": {
-                    "entity_definitions": {},
-                    "rule_definitions": {},
-                    "references": {}
-                  }
-            */
             var client = await GenerateTestData("7");
             try
             {
-                var schema = (await client.ReadSchemaAsync("99999")).AsObject();
-                Console.WriteLine(schema);
+                var schema = await client.ReadSchemaAsync("99999");
 
-                schema = schema["schema"].AsObject();
-
-                var definitions = schema["entity_definitions"].AsObject();
-                var rules = schema["rule_definitions"].AsObject();
-                var references = schema["references"].AsObject();
-
-                Assert.AreEqual(0, definitions.Count);
-                Assert.AreEqual(0, rules.Count);
-                Assert.AreEqual(0, references.Count);
+                Assert.IsTrue(schema.Entities is null || schema.Entities.Count == 0);
+                Assert.IsTrue(schema.Rules is null || schema.Rules.Count == 0);
+                Assert.IsTrue(schema.References is null || schema.References.Count == 0);
             }
             finally
             {

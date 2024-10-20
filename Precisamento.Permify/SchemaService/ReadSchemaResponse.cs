@@ -8,7 +8,7 @@ namespace Precisamento.Permify.SchemaService
 {
     public class ReadSchemaResponse
     {
-        [JsonPropertyName("scema")]
+        [JsonPropertyName("schema")]
         public SchemaDefinition Schema { get; set; }
     }
 }

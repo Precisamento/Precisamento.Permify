@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using System.Net.Http;
 
 namespace Precisamento.Permify
 {
@@ -73,6 +74,19 @@ namespace Precisamento.Permify
         public Task<ListSchemaResponse> ListSchemaAsync(int pageSize = 10, string? continuousToken = null);
 
         /// <summary>
+        /// Make partial updates to a schema by adding or modifying actions within individual entities.
+        /// </summary>
+        /// <param name="updates">A map of entities and the updates to be made to them.</param>
+        /// <param name="schemaVersion">
+        /// The version of the schema used as the base to perform the update. 
+        /// Will use the head schema if unspecified.
+        /// </param>
+        /// <returns>The new schema version after the update.</returns>
+        /// <exception cref="PermifyException">Permify returned an error. Inspect <see cref="PermifyException.Error"/> for additional details.</exception>
+        /// <exception cref="HttpRequestException">An error occurred with the HTTP request.</exception>
+        public Task<SchemaMetadata> PartialSchemaUpdateAsync(Dictionary<string, EntityUpdate> updates, string? schemaVersion = null);
+
+        /// <summary>
         /// Returns the schema with the given version.
         /// </summary>
         /// <remarks>
@@ -81,7 +95,7 @@ namespace Precisamento.Permify
         /// <param name="schemaVersion">The version of the schema to retrieve.</param>
         /// <exception cref="PermifyException">Permify returned an error. Inspect <see cref="PermifyException.Error"/> for additional details.</exception>
         /// <exception cref="HttpRequestException">An error occurred with the HTTP request.</exception>
-        public Task<JsonNode> ReadSchemaAsync(string schemaVersion);
+        public Task<SchemaDefinition> ReadSchemaAsync(string schemaVersion);
 
         /// <summary>
         /// Returns the schema with the given version, or the latest schema if no version is provided.
@@ -92,7 +106,7 @@ namespace Precisamento.Permify
         /// <param name="schemaVersion">The version of the schema to retrieve.</param>
         /// <exception cref="PermifyException">Permify returned an error. Inspect <see cref="PermifyException.Error"/> for additional details.</exception>
         /// <exception cref="HttpRequestException">An error occurred with the HTTP request.</exception>
-        public Task<JsonNode> ReadSchemaAsync(SchemaMetadata schemaVersion);
+        public Task<SchemaDefinition> ReadSchemaAsync(SchemaMetadata schemaVersion);
 
         /// <summary>
         /// Adds the listed relationships and attributes to the Permify tenant.
@@ -244,6 +258,7 @@ namespace Precisamento.Permify
             string entityType,
             string permission,
             PermifySubject subject,
+            LookupScope? scope = null,
             PermissionMetadata? metadata = null,
             PermissionContext? context = null);
 
@@ -326,6 +341,15 @@ namespace Precisamento.Permify
         public Task<ListSchemaResponse> ListSchemaAsync(ListSchemaRequest request);
 
         /// <summary>
+        /// Make partial updates to a schema by adding or modifying actions within individual entities.
+        /// </summary>
+        /// <param name="request">The request data.</param>
+        /// <returns>The new schema version after the update.</returns>
+        /// <exception cref="PermifyException">Permify returned an error. Inspect <see cref="PermifyException.Error"/> for additional details.</exception>
+        /// <exception cref="HttpRequestException">An error occurred with the HTTP request.</exception>
+        public Task<SchemaMetadata> PartialSchemaUpdateAsync(PartialSchemaUpdateRequest request);
+
+        /// <summary>
         /// Returns the schema with the given version, or the latest schema if no version is provided.
         /// </summary>
         /// <remarks>
@@ -334,7 +358,7 @@ namespace Precisamento.Permify
         /// <param name="request">The request data.</param>
         /// <exception cref="PermifyException">Permify returned an error. Inspect <see cref="PermifyException.Error"/> for additional details.</exception>
         /// <exception cref="HttpRequestException">An error occurred with the HTTP request.</exception>
-        public Task<JsonNode> ReadSchemaAsync(ReadSchemaRequest request);
+        public Task<SchemaDefinition> ReadSchemaAsync(ReadSchemaRequest request);
 
         /// <summary>
         /// Creates the listed relationships and attributes.
@@ -503,6 +527,20 @@ namespace Precisamento.Permify
         public Task<ListSchemaResponse> ListSchemaAsync(string tenant, int pageSize = 10, string? continuousToken = null);
 
         /// <summary>
+        /// Make partial updates to a schema by adding or modifying actions within individual entities.
+        /// </summary>
+        /// <param name="tenant">The tenant to target for this request.</param>
+        /// <param name="updates">A map of entities and the updates to be made to them.</param>
+        /// <param name="schemaVersion">
+        /// The version of the schema used as the base to perform the update. 
+        /// Will use the head schema if unspecified.
+        /// </param>
+        /// <returns>The new schema version after the update.</returns>
+        /// <exception cref="PermifyException">Permify returned an error. Inspect <see cref="PermifyException.Error"/> for additional details.</exception>
+        /// <exception cref="HttpRequestException">An error occurred with the HTTP request.</exception>
+        public Task<SchemaMetadata> PartialSchemaUpdateAsync(string tenant, Dictionary<string, EntityUpdate> updates, string? schemaVersion = null);
+
+        /// <summary>
         /// Returns the schema with the given version.
         /// </summary>
         /// <remarks>
@@ -512,7 +550,7 @@ namespace Precisamento.Permify
         /// <param name="schemaVersion">The version of the schema to retrieve.</param>
         /// <exception cref="PermifyException">Permify returned an error. Inspect <see cref="PermifyException.Error"/> for additional details.</exception>
         /// <exception cref="HttpRequestException">An error occurred with the HTTP request.</exception>
-        public Task<JsonNode> ReadSchemaAsync(string tenant, string schemaVersion);
+        public Task<SchemaDefinition> ReadSchemaAsync(string tenant, string schemaVersion);
 
         /// <summary>
         /// Returns the schema with the given version, or the latest schema if no version is provided.
@@ -524,7 +562,7 @@ namespace Precisamento.Permify
         /// <param name="schemaVersion">The version of the schema to retrieve.</param>
         /// <exception cref="PermifyException">Permify returned an error. Inspect <see cref="PermifyException.Error"/> for additional details.</exception>
         /// <exception cref="HttpRequestException">An error occurred with the HTTP request.</exception>
-        public Task<JsonNode> ReadSchemaAsync(string tenant, SchemaMetadata schemaVersion);
+        public Task<SchemaDefinition> ReadSchemaAsync(string tenant, SchemaMetadata schemaVersion);
 
         /// <summary>
         /// Adds the listed relationships and attributes to the Permify tenant.
@@ -694,6 +732,7 @@ namespace Precisamento.Permify
             string entityType,
             string permission,
             PermifySubject subject,
+            LookupScope? scope = null,
             PermissionMetadata? metadata = null,
             PermissionContext? context = null);
 
@@ -781,6 +820,16 @@ namespace Precisamento.Permify
         public Task<ListSchemaResponse> ListSchemaAsync(string tenant, ListSchemaRequest request);
 
         /// <summary>
+        /// Make partial updates to a schema by adding or modifying actions within individual entities.
+        /// </summary>
+        /// <param name="tenant">The tenant to target for this request.</param>
+        /// <param name="request">The request data.</param>
+        /// <returns>The new schema version after the update.</returns>
+        /// <exception cref="PermifyException">Permify returned an error. Inspect <see cref="PermifyException.Error"/> for additional details.</exception>
+        /// <exception cref="HttpRequestException">An error occurred with the HTTP request.</exception>
+        public Task<SchemaMetadata> PartialSchemaUpdateAsync(string tenant, PartialSchemaUpdateRequest request);
+
+        /// <summary>
         /// Returns the schema with the given version, or the latest schema if no version is provided.
         /// </summary>
         /// <remarks>
@@ -790,7 +839,7 @@ namespace Precisamento.Permify
         /// <param name="request">The request data.</param>
         /// <exception cref="PermifyException">Permify returned an error. Inspect <see cref="PermifyException.Error"/> for additional details.</exception>
         /// <exception cref="HttpRequestException">An error occurred with the HTTP request.</exception>
-        public Task<JsonNode> ReadSchemaAsync(string tenant, ReadSchemaRequest request);
+        public Task<SchemaDefinition> ReadSchemaAsync(string tenant, ReadSchemaRequest request);
 
         /// <summary>
         /// Creates the listed relationships and attributes.

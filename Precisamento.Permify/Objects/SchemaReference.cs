@@ -9,7 +9,7 @@ namespace Precisamento.Permify.Objects
     /// <summary>
     /// Distinguishes if a name refers to an entity or a rule.
     /// </summary>
-    [JsonConverter(typeof(JsonStringEnumConverter))]
+    [JsonConverter(typeof(JsonStringEnumMemberConverter))]
     public enum SchemaReference
     {
         /// <summary>
