@@ -24,6 +24,7 @@ namespace Precisamento.Permify
 
         private const string WRITE_SCHEMA = "schemas/write";
         private const string LIST_SCHEMA = "schemas/list";
+        private const string PARTIAL_SCHEMA_UPDATE = "schemas/partial-write";
         private const string READ_SCHEMA = "schemas/read";
         private const string WRITE_AUTHORIZATION_DATA = "data/write";
         private const string READ_RELATIONSHIPS = "data/relationships/read";
@@ -136,8 +137,8 @@ namespace Precisamento.Permify
             => ListSchemaAsync(tenant, new ListSchemaRequest(pageSize, continuousToken));
 
         /// <inheritdoc />
-        public async Task<ListSchemaResponse> ListSchemaAsync(ListSchemaRequest request)
-            => await ListSchemaAsync(_tenantId, request);
+        public Task<ListSchemaResponse> ListSchemaAsync(ListSchemaRequest request)
+            => ListSchemaAsync(_tenantId, request);
 
         /// <inheritdoc />
         public async Task<ListSchemaResponse> ListSchemaAsync(string tenant, ListSchemaRequest request)
@@ -147,31 +148,51 @@ namespace Precisamento.Permify
         }
 
         /// <inheritdoc />
-        public Task<JsonNode> ReadSchemaAsync(string schemaVersion)
+        public Task<SchemaMetadata> PartialSchemaUpdateAsync(Dictionary<string, EntityUpdate> updates, string? schemaVersion = null)
+            => PartialSchemaUpdateAsync(_tenantId, new PartialSchemaUpdateRequest(updates, schemaVersion == null ? null : new SchemaMetadata(schemaVersion)));
+
+        /// <inheritdoc />
+        public Task<SchemaMetadata> PartialSchemaUpdateAsync(string tenant, Dictionary<string, EntityUpdate> updates, string? schemaVersion = null)
+            => PartialSchemaUpdateAsync(tenant, new PartialSchemaUpdateRequest(updates, schemaVersion == null ? null : new SchemaMetadata(schemaVersion)));
+
+        /// <inheritdoc />
+        public Task<SchemaMetadata> PartialSchemaUpdateAsync(PartialSchemaUpdateRequest request)
+            => PartialSchemaUpdateAsync(_tenantId, request);
+
+        /// <inheritdoc />
+        public async Task<SchemaMetadata> PartialSchemaUpdateAsync(string tenantId, PartialSchemaUpdateRequest request)
+        {
+            var response = await _client.PostAsJsonAsync(GetUrl(tenantId, PARTIAL_SCHEMA_UPDATE), request);
+            return await HandleResponse<SchemaMetadata>(response);
+        }
+
+        /// <inheritdoc />
+        public Task<SchemaDefinition> ReadSchemaAsync(string schemaVersion)
             => ReadSchemaAsync(_tenantId, new ReadSchemaRequest(new SchemaMetadata(schemaVersion)));
 
         /// <inheritdoc />
-        public Task<JsonNode> ReadSchemaAsync(string tenant, string schemaVersion)
+        public Task<SchemaDefinition> ReadSchemaAsync(string tenant, string schemaVersion)
             => ReadSchemaAsync(tenant, new ReadSchemaRequest(new SchemaMetadata(schemaVersion)));
 
         /// <inheritdoc />
-        public Task<JsonNode> ReadSchemaAsync(SchemaMetadata schemaVersion)
+        public Task<SchemaDefinition> ReadSchemaAsync(SchemaMetadata schemaVersion)
             => ReadSchemaAsync(new ReadSchemaRequest(schemaVersion));
 
         /// <inheritdoc />
-        public Task<JsonNode> ReadSchemaAsync(string tenant, SchemaMetadata schemaVersion)
+        public Task<SchemaDefinition> ReadSchemaAsync(string tenant, SchemaMetadata schemaVersion)
             => ReadSchemaAsync(tenant, new ReadSchemaRequest(schemaVersion));
 
         /// <inheritdoc />
-        public Task<JsonNode> ReadSchemaAsync(ReadSchemaRequest request)
+        public Task<SchemaDefinition> ReadSchemaAsync(ReadSchemaRequest request)
             => ReadSchemaAsync(_tenantId, request);
 
         /// <inheritdoc />
-        public async Task<JsonNode> ReadSchemaAsync(string tenant, ReadSchemaRequest request)
+        public async Task<SchemaDefinition> ReadSchemaAsync(string tenant, ReadSchemaRequest request)
         {
             request.Metadata = EnsureSchemaMetadata(request.Metadata);
             var response = await _client.PostAsJsonAsync(GetUrl(tenant, READ_SCHEMA), request);
-            return await HandleResponse<JsonNode>(response);
+            var result = await HandleResponse<ReadSchemaResponse>(response);
+            return result.Schema;
         }
 
         /// <inheritdoc />
@@ -193,8 +214,8 @@ namespace Precisamento.Permify
         }
 
         /// <inheritdoc />
-        public async Task<SnapMetadata> WriteAuthorizationDataAsync(WriteAuthorizationDataRequest request)
-            => await WriteAuthorizationDataAsync(_tenantId, request);
+        public Task<SnapMetadata> WriteAuthorizationDataAsync(WriteAuthorizationDataRequest request)
+            => WriteAuthorizationDataAsync(_tenantId, request);
 
         /// <inheritdoc />
         public async Task<SnapMetadata> WriteAuthorizationDataAsync(string tenant, WriteAuthorizationDataRequest request)
@@ -454,10 +475,11 @@ namespace Precisamento.Permify
             string entityType,
             string permission,
             PermifySubject subject,
+            LookupScope? scope = null,
             PermissionMetadata? metadata = null,
             PermissionContext? context = null)
         {
-            var response = await LookupEntityAsync(new LookupEntityRequest(entityType, permission, subject, metadata, context));
+            var response = await LookupEntityAsync(new LookupEntityRequest(entityType, permission, subject, scope, metadata, context));
             return response.EntityIds;
         }
 
@@ -467,10 +489,11 @@ namespace Precisamento.Permify
             string entityType,
             string permission,
             PermifySubject subject,
+            LookupScope? scope = null,
             PermissionMetadata? metadata = null,
             PermissionContext? context = null)
         {
-            var response = await LookupEntityAsync(tenant, new LookupEntityRequest(entityType, permission, subject, metadata, context));
+            var response = await LookupEntityAsync(tenant, new LookupEntityRequest(entityType, permission, subject, scope, metadata, context));
             return response.EntityIds;
         }
 

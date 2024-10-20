@@ -1,6 +1,6 @@
 # Precisamento.Permify
 
-Precisamento.Permify is a C# SDK for the Permify API.
+Precisamento.Permify is a community C# SDK for the Permify API.
 
 # Usage
 
@@ -79,6 +79,14 @@ class MyController : Controller {
     _permify = permify;
   }
 }
+```
+
+## Install
+
+This library can be installed from nuget under the name `Precisamento.Permify`.
+
+```sh
+dotnet add package Precisamento.Permify
 ```
 
 # Docs
